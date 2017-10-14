@@ -7,6 +7,7 @@ table tr th {
 	background: silver;
 }
 input { padding:4px; }
+select { padding:4px; }
 form {margin:0px;}
 </style>
 <?php
@@ -92,10 +93,29 @@ echo "<table>";
 				}
 				echo "<tr>";
 				echo "<td><input type=text name=name></td>";
-				echo "<td><input type=text name=type style='width:100px;'></td>";
+				//echo "<td><input type=text name=type style='width:100px;'></td>";
+				echo "<td>";
+					echo "<select name=type style='width:100px;'>";
+						echo "<option value=int>int</option>";
+						echo "<option value=varchar>varchar</option>";
+						echo "<option value=text>text</option>";
+					echo "</select>";
+				echo "</td>";
 				echo "<td><input type=text name=size style='width:50px;'></td>";
-				echo "<td><input type=text name=special></td>";
-				echo "<td><input type=text name=others style='width:100px;'></td>";
+				//echo "<td><input type=text name=special></td>";
+				echo "<td>";
+					echo "<select name=special style='width:160px;'>";
+						echo "<option value=''>NONE</option>";
+						echo "<option value='AUTO_INCREMENT'>AUTO_INCREMENT</option>";
+					echo "</select>";
+				echo "</td>";
+				//echo "<td><input type=text name=others style='width:100px;'></td>";
+				echo "<td>";
+					echo "<select name=others style='width:100px;'>";
+						echo "<option value=''>NONE</option>";
+						echo "<option value='PRIMARY'>PRIMARY</option>";
+					echo "</select>";
+				echo "</td>";
 				echo "<td><input type=submit name=addnew value=Add></td>";
 				echo "</tr>";
 				echo "</table></form>";
@@ -147,8 +167,8 @@ echo "<table>";
 					foreach($result as $n => $row){
 						$data[$n] = $_POST["input_".$n];
 					}
-					$result = dibi::query("INSERT INTO ".$table, $data);
-					header("location:?showtable=".$_GET["showtable"]."&type=data");
+					$result__ = dibi::query("INSERT INTO ".$table, $data);
+					//header("location:?showtable=".$_GET["showtable"]."&type=data");
 				}
 				echo "<b>Add record to table <i>".$table."</i></b>";
 				echo "<form action=# method=post><table border=\"1\" style=\"table-layout: fixed; border-collapse: collapse;\"><tr><th>Name</th><th>Type</th><th>Value</th></tr>";			
