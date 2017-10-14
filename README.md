@@ -11,3 +11,13 @@ it returns TibiResult it's iterable and countable.
 You can you se $result->sql to show the constructed sql
 ->fetch() for first result
 or foreach
+
+For connect you need add this parameter 
+
+$options = array(
+			'folder'   => './data/',
+			'root'	   => null
+		);
+dibi::connect($options);
+
+You don't need the root
