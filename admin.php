@@ -11,7 +11,10 @@ form {margin:0px;}
 </style>
 <?php
 include "tibi.php";
-include "../../library/config.php";
+if(file_exists("config.php"))
+	include "./config.php";
+else
+	include "../../library/config.php";
 $config = new Config(null);
 
 $options = array(
