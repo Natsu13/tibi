@@ -542,8 +542,11 @@ class dibi {
 								foreach($tdata as $e => $tg){
 									if(isset($tg["others"]) and $tg["others"] == "PRIMARY")
 										continue;
-									if(!isset($_data_for_insert[$e]))
+									if(!isset($_data_for_insert[$e]) or $_data_for_insert[$e] == ""){
 										$data_from_table[$_id][$e] = "";
+										if($data_from_table["scheme"][$e]["type"] == "int")
+											$data_from_table[$_id][$e] = "0";
+									}
 									else
 										$data_from_table[$_id][$e] = $_data_for_insert[$e];
 								}								
