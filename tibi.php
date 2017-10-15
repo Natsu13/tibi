@@ -91,6 +91,7 @@ class dibi {
 	private static $root = null;
 	public static $numOfQueries = 0;
 	public static $totalTime = 0;
+	private static $lastInsertId = null;
 	
 	static function connect($options){
 		dibi::$substitutes = new Substitutes();
@@ -102,6 +103,8 @@ class dibi {
 	static function getConnection(){
 		return null;
 	}
+	
+	static function InsertId(){ return dibi::$lastInsertId; }
 	
 	static $substitutes = null;
 	static function getSubstitutes(){
@@ -326,9 +329,30 @@ class dibi {
 					}
 				}
 				else if(strtolower($dt[0]) == "select"){
-					$i_pos = 2;
+					$i_pos = 2;					
 					if($dt[1] == "*")
 						$select = array("*");
+					else{
+						$_select_what_you_want = "";
+						$all = "";
+						for($q = strlen($dt[0])+1; $q < strlen($arg); $q++){
+							$ch = substr($arg, $q, 1);
+							if(strtolower(substr($arg, $q, 4)) == "from"){
+								if(trim($_select_what_you_want) != "")
+									$select[] = trim($_select_what_you_want);	
+								break;
+							}
+							if($ch == ","){
+								$select[] = trim($_select_what_you_want);
+								$_select_what_you_want = "";
+							}else
+								$_select_what_you_want.=$ch;
+							$all.= $ch;
+						}
+						$_new_text = str_replace($all, "... ", $arg);
+						$_new_text = str_replace("  ", " ", $_new_text);
+						$dt = explode(" ", $_new_text);
+					}
 					if(strtolower($dt[2]) == "from"){
 						$from = $dt[3];
 						$from = str_replace(":prefix:", dibi::$substitutes->prefix, $from);
@@ -536,8 +560,9 @@ class dibi {
 								unset($_data_for_insert[$table_id_column]);
 								if($_id == "" and $_is_auto_increment){
 									$_id = $data_from_table["__table_data"]["auto_increment"];
+									dibi::$lastInsertId = $_id;
 									$data_from_table["__table_data"]["auto_increment"] += 1;
-								}
+								}else{ dibi::$lastInsertId = $_id; }
 								//$data_from_table[$_id] = $_data_for_insert;
 								foreach($tdata as $e => $tg){
 									if(isset($tg["others"]) and $tg["others"] == "PRIMARY")
@@ -611,7 +636,6 @@ class dibi {
 			}
 			else if($n == "__table_data"){}
 			else{
-				$addMeSenpai = true;
 				$_tdt = array();
 				$l = true;
 				$_last_result_where = null;
@@ -621,9 +645,6 @@ class dibi {
 					$_data_for_compare[$e] = $tg;
 					$_tdt[$e] = $tg;
 				}
-				//var_dump($_data_for_compare);
-				//echo "<hr>";
-				//var_dump($where_condition);
 				foreach($where_condition as $f => $wcond){					
 					$l = $wcond->match($_data_for_compare[$f], $_last_result_where);
 					$_last_result_where = $l;
@@ -642,15 +663,10 @@ class dibi {
 		}
 		
 		if($_update_record != null){
-			//echo "<hr> <b>START:</b>";
-			//var_dump($table_data_for);
-			//echo "<hr>";
 			foreach($table_data_for as $p => $upd){
 				unset($table_data_for[$p][$table_id_column]);
 			}
 			
-			//var_dump($data_from_table);
-			//echo "<hr>";
 			foreach($data_from_table as $p => $upd){
 				if($p != "__table_data" and $p != "scheme"){
 					if(isset($table_data_for[$p])){
@@ -660,7 +676,6 @@ class dibi {
 			}
 			
 			$arr = Config::ssave($data_from_table);		
-			//echo "<hr><b>data(".filesize($file)."):</b>".$arr."<hr>";			
 			$_soubor = fopen($file, "w");
 			fwrite($_soubor, $arr);
 			fclose($_soubor);
@@ -669,13 +684,11 @@ class dibi {
 			$text = fread($__soubor, filesize($file));
 			fclose($__soubor);
 			
-			//echo "<br>END(".filesize($file).", ".$file.")<hr>";
-			
 			$tibi_result->setData($table_data_for);
 			$tibi_result->totalTime = microtime() - $time_start;
 			dibi::$totalTime += microtime() - $time_start;
 			return $tibi_result;
-		}else if($_delete_where){			
+		}else if($_delete_where){		
 			foreach($data_from_table as $p => $upd){
 				if($p != "__table_data" and $p != "scheme"){					
 					if(isset($table_data_for[$p])){						
@@ -693,6 +706,18 @@ class dibi {
 			$tibi_result->totalTime = microtime() - $time_start;
 			dibi::$totalTime += microtime() - $time_start;
 			return $tibi_result;
+		}else{
+			foreach($table_data_for as $p => $upd){
+				if($select[0] != "*"){
+					if(!in_array($table_id_column, $select)){
+						unset($table_data_for[$p][$table_id_column]);
+					}
+					foreach($table_data_for[$p] as $w => $se){
+						if(!in_array($w, $select))
+							unset($table_data_for[$p][$w]);
+					}
+				}
+			}
 		}
 		$tibi_result->setData($table_data_for);
 		$tibi_result->totalTime = microtime() - $time_start;

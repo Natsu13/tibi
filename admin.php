@@ -230,7 +230,6 @@ echo "<table>";
 			echo "<table border=\"1\" style=\"table-layout: fixed; border-collapse: collapse;\">";
 			if($result->fetch() == null) echo "<i>Tibi return zero result</i>";			
 			foreach($result as $n => $re){
-				echo "<tr><td>".$n."</td>";
 				foreach($re as $q){
 					echo "<td>".$q."</td>";
 				}
@@ -239,5 +238,6 @@ echo "<table>";
 			echo "</table>";
 		}
 	echo "</div>";
+	echo "<small>SQL Commands: ".dibi::$numOfQueries." in ".dibi::$totalTime." sec</small>";
 	echo "</td></tr>";
 echo "<table>";
