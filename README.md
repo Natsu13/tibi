@@ -21,3 +21,21 @@ $options = array(
 dibi::connect($options);
 
 You don't need the root
+
+_Whats work:_
+ALTER TABLE table DROP column
+ALTER TABLE table ADD column datetype(size) [auto_increment] [primary]
+ALTER TABLE table MODIFY COLUMN column datetype(size) [auto_increment] [primary]
+ALTER TABLE table RENAME COLUMN column TO newcolumn
+DESCRIBE table
+CREATE TABLE table
+SHOW TABLES
+SELECT * FROM table [WHERE left = right]
+INSERT INTO table (there you must send in second argument the array of data, you can call this command like a text (*1*))
+UPDATE table SET (*1*) [WHERE left = right]
+DELETE FROM table [WHERE left = right]
+
+_Whats not work:_
+LIKE in WHERE
+SELECT column, column2, ...
+JOIN
