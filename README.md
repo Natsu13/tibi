@@ -33,6 +33,7 @@ DESCRIBE table
 CREATE TABLE table
 SHOW TABLES
 SELECT * FROM table [WHERE left = right]
+SELECT column1, column2 FROM table [WHERE left = right]
 INSERT INTO table (there you must send in second argument the array of data, you can call this command like a text (__*1*__))
 UPDATE table SET (__*1*__) [WHERE left = right]
 DELETE FROM table [WHERE left = right]
@@ -40,6 +41,5 @@ DELETE FROM table [WHERE left = right]
 __Whats not work:__
 ```
 LIKE in WHERE
-SELECT column, column2, ...
 JOIN
 ```
